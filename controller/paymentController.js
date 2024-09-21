@@ -134,6 +134,13 @@ async function generateAndSendInvoice(paymentDetails) {
         console.log("PDF sent");
 
         // Clean up (delete the generated PDF file after sending)
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log("file deleted");
+          }
+        });
 
         // Resolve the promise
         resolve({ success, error, filePath });
