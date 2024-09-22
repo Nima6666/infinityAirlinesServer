@@ -7,12 +7,6 @@ const fs = require("fs");
 const PaymentModel = require("../model/payment");
 const PackageModel = require("../model/package");
 
-// Ensure logs folder exists
-const logsDir = path.join(__dirname, "../bills_generated");
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir);
-}
-
 // initializing stripe
 const stripe = require("stripe")(process.env.STRIPE_SEC_KEY);
 
@@ -25,6 +19,12 @@ const transporter = nodemailer.createTransport({
 });
 
 async function generateAndSendInvoice(paymentDetails) {
+  // Ensure logs folder exists
+  const billsDir = path.join(__dirname, "../bills_generated");
+  if (!fs.existsSync(billsDir)) {
+    fs.mkdirSync(billsDir);
+  }
+
   return new Promise((resolve, reject) => {
     let success = false;
     let filePath = path.join(__dirname, "../bills_generated", "bill.pdf");
