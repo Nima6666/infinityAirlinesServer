@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function generateAndSendInvoice(paymentDetails) {
-  // Ensure logs folder exists
+  // Ensure bills folder exists
   const billsDir = path.join(__dirname, "../bills_generated");
   if (!fs.existsSync(billsDir)) {
     fs.mkdirSync(billsDir);
