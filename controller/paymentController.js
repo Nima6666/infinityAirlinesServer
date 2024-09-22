@@ -7,6 +7,12 @@ const fs = require("fs");
 const PaymentModel = require("../model/payment");
 const PackageModel = require("../model/package");
 
+// Ensure logs folder exists
+const logsDir = path.join(__dirname, "../bills_generated");
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
+
 // initializing stripe
 const stripe = require("stripe")(process.env.STRIPE_SEC_KEY);
 
