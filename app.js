@@ -30,6 +30,13 @@ app.use("/users", userRoute);
 app.use("/payment", paymentRoute);
 app.use("/googleoauth", googleOauthRoute);
 
+app.get("/", (req, res) => {
+  res.json({
+    title: "Welcome to Infinity Airlines.",
+    message: "Expecting client to run on http://localhost:2424",
+  });
+});
+
 // Starting Server
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
