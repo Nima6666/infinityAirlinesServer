@@ -150,49 +150,67 @@ module.exports.register = asyncHandler(async (req, res) => {
 
 // user login
 module.exports.login = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, recaptchaToken } = req.body;
 
-  const user = req.requestingUser;
+  if (!email || !password || !recaptchaToken) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide all required fields",
+    });
+  }
 
-  // validating password
-  const passwordMatch = await bcrypt.compare(password, user.password);
-  if (!passwordMatch) {
-    const loginAttempts = user.loginAttempt;
-    user.loginAttempt = loginAttempts + 1;
+  // verifying recaptcha token recived from web client
+  const { success, err } = await verifyRecaptchaToken(recaptchaToken);
 
-    // suspending user on login attempts more than 5
-    if (user.loginAttempt > 4) {
-      user.suspended = Date.now() + 5 * 60 * 1000;
+  if (err) {
+    return res.status(500).json({
+      message: "error verifying reCaptcha token",
+    });
+  }
+
+  if (success) {
+    const user = req.requestingUser;
+
+    // validating password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      const loginAttempts = user.loginAttempt;
+      user.loginAttempt = loginAttempts + 1;
+
+      // suspending user on login attempts more than 5
+      if (user.loginAttempt > 4) {
+        user.suspended = Date.now() + 5 * 60 * 1000;
+      }
+
+      await user.save();
+      console.log(user.loginAttempt);
+      return res.status(401).json({ message: "Invalid password" });
     }
 
-    await user.save();
-    console.log(user.loginAttempt);
-    return res.status(401).json({ message: "Invalid password" });
-  }
-
-  // payload for jwt signing
-  const payload = {
-    userId: user._id.toString(),
-    name: user.name,
-    email: user.email,
-  };
-  if (user.picture) {
-    payload.picture = user.picture;
-  }
-
-  // generating token passing payload
-  const token = generateToken(payload);
-
-  res.status(200).json({
-    success: true,
-    message: "Login successful",
-    user: {
-      token,
+    // payload for jwt signing
+    const payload = {
+      userId: user._id.toString(),
       name: user.name,
       email: user.email,
-      verified: user.verified,
-    },
-  });
+    };
+    if (user.picture) {
+      payload.picture = user.picture;
+    }
+
+    // generating token passing payload
+    const token = generateToken(payload);
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        token,
+        name: user.name,
+        email: user.email,
+        verified: user.verified,
+      },
+    });
+  }
 });
 
 // getting user by token
