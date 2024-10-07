@@ -33,7 +33,8 @@ app.use("/googleoauth", googleOauthRoute);
 app.get("/", (req, res) => {
   res.json({
     title: "Welcome to Infinity Airlines.",
-    message: "Expecting client to run on http://localhost:2424",
+    message:
+      "Expecting client to run on http://localhost:2424. get client to run locally at https://github.com/Nima6666/assignmentClient.git",
   });
 });
 
