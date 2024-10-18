@@ -1,0 +1,5 @@
+- Google Recaptcha V2 implemented.
+- Google Oauth.
+- Stripe Payment.
+- User account verification.
+- Password reset Via reset link.
