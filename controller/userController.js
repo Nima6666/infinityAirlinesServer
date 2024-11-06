@@ -55,7 +55,7 @@ const transporter = nodemailer.createTransport({
 module.exports.register = asyncHandler(async (req, res) => {
   const { email, name, password, recaptchaToken } = req.body;
 
-  if ((!email || !password || !name, !recaptchaToken)) {
+  if ((!email || !password || !name || !recaptchaToken)) {
     return res.status(400).json({
       success: false,
       message: "Please provide all required fields",
