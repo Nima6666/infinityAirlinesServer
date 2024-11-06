@@ -423,7 +423,7 @@ module.exports.sendPasswordResetLink = asyncHandler(async (req, res) => {
   if (userFound) {
     let prevKeyValid = false;
 
-    const prevKey = await Verification.findOne({ for: "password_reset" }).sort(
+    const prevKey = await Verification.findOne({ user_id: userFound._id , for: "password_reset" }).sort(
       "-created"
     );
 
